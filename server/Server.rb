@@ -21,7 +21,7 @@ class Server
         loop do
             Thread.start(@connection.accept()) do | client |
             
-                puts('Opening connection to %s \n' % [client.to_s])
+                puts('Opening connection to %s' % [client.to_s])
 
                 while command = client.gets()
                     printf('Command: %s' % [command])
@@ -29,7 +29,7 @@ class Server
                 end
 
                 client.close()
-                puts('Closing connection to %s \n' % [client.to_s])
+                puts('Closing connection to %s' % [client.to_s()])
             end
         end
     end
@@ -50,7 +50,7 @@ class Server
             exptime = $~['exptime']
             bytes = $~['bytes'].to_i()
             data = self.get_data(client, bytes)
-            noreply = $~['noreply'].nil?
+            noreply = !$~['noreply'].nil?
 
             self.set(client, key, flags, exptime, bytes, data, noreply)
 
@@ -60,7 +60,7 @@ class Server
             exptime = $~['exptime']
             bytes = $~['bytes'].to_i()
             data = self.get_data(client, bytes)
-            noreply = $~['noreply'].nil?
+            noreply = !$~['noreply'].nil?
 
             self.add(key, flags, exptime, bytes, data, noreply)
             
@@ -70,7 +70,7 @@ class Server
             exptime = $~['exptime']
             bytes = $~['bytes'].to_i()
             data = self.get_data(client, bytes)
-            noreply = $~['noreply'].nil?
+            noreply = !$~['noreply'].nil?
 
             self.replace(key, flags, exptime, bytes, data, noreply)
 
@@ -78,7 +78,7 @@ class Server
             key = $~['key']
             bytes = $~['bytes'].to_i()
             data = self.get_data(client, bytes)
-            noreply = $~['noreply'].nil?
+            noreply = !$~['noreply'].nil?
 
             self.append(client, key, bytes, data, noreply)
 
@@ -86,7 +86,7 @@ class Server
             key = $~['key']
             bytes = $~['bytes'].to_i()
             data = self.get_data(client, bytes)
-            noreply = $~['noreply'].nil?
+            noreply = !$~['noreply'].nil?
 
             self.prepend(client, key, bytes, data, noreply)
 
@@ -97,7 +97,7 @@ class Server
             bytes = $~['bytes'].to_i()
             data = self.get_data(client, bytes)
             cas_id = $~['cas_id'].to_i()
-            noreply = $~['noreply'].nil?
+            noreply = !$~['noreply'].nil?
 
             self.cas(key, flags, exptime, bytes, data, noreply)
 
