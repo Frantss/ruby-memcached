@@ -109,7 +109,9 @@ class Server
     end
 
     def get_data(client, bytes)
-        return "TEST"
+        data = ""
+        (0..bytes).each do data << client.getc() end
+        return data
     end
 
     def get(client, keys)
