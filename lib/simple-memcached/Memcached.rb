@@ -74,8 +74,3 @@ class Memcached
         end
     end
 end
-
-require_relative './memcached/Responses.rb'
-require_relative './memcached/Item.rb'
-require_relative './memcached/server/Server.rb'
-

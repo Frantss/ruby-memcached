@@ -1,5 +1,4 @@
 require 'socket'
-require 'concurrent'
 require_relative './static/Commands.rb'
 require_relative './static/Responses.rb'
 require_relative './static/Errors.rb'
@@ -43,34 +42,34 @@ class Memcached::Server
 
     def parse(command, client)
         case command
-        when Commands::GET_REGEX
-            self.get(client, $~)
+            when Commands::GET_REGEX
+                self.get(client, $~)
 
-        when Commands::GETS_REGEX
-            self.gets(client, $~)
+            when Commands::GETS_REGEX
+                self.gets(client, $~)
 
-        when Commands::SET_REGEX
-            self.set(client, $~)
+            when Commands::SET_REGEX
+                self.set(client, $~)
 
-        when Commands::ADD_REGEX
-            self.add(client, $~)
-            
-        when Commands::REPLACE_REGEX
-            self.replace(client, $~)
+            when Commands::ADD_REGEX
+                self.add(client, $~)
+                
+            when Commands::REPLACE_REGEX
+                self.replace(client, $~)
 
-        when Commands::APPEND_REGEX
-            self.append(client, $~)
+            when Commands::APPEND_REGEX
+                self.append(client, $~)
 
-        when Commands::PREPEND_REGEX
-            self.prepend(client, $~)
+            when Commands::PREPEND_REGEX
+                self.prepend(client, $~)
 
-        when Commands::CAS_REGEX
-            self.cas(client, $~)
+            when Commands::CAS_REGEX
+                self.cas(client, $~)
 
-        when Commands::END_REGEX
-            return false;
-        else
-            client.puts(Errors::CLIENT_ERROR % [": Invalid command"])
+            when Commands::END_REGEX
+                return false;
+            else
+                client.puts(Errors::CLIENT_ERROR % [": Invalid command"])
         end
         return true
     end
@@ -79,8 +78,8 @@ class Memcached::Server
         return client.recv(bytes).chomp()
     end
 
-    def get(client, cmd)
-        keys = cmd['keys'].split(' ')
+    def get(client, command)
+        keys = command['keys'].split(' ')
         items = @memc.get_multi(keys)
 
         for item in items
@@ -89,8 +88,8 @@ class Memcached::Server
         client.puts(Responses::END_RESPONSE)
     end
 
-    def gets(client, cmd)
-        keys = cmd['keys'].split(' ')
+    def gets(client, command)
+        keys = command['keys'].split(' ')
         items = @memc.get_multi(keys)
 
         for item in items
@@ -99,71 +98,71 @@ class Memcached::Server
         client.puts(Responses::END_RESPONSE)
     end
 
-    def set(client, cmd)
-        key = cmd['key']
-        flags = cmd['flags']
-        exptime = cmd['exptime']
-        bytes = cmd['bytes'].to_i()
+    def set(client, command)
+        key = command['key']
+        flags = command['flags']
+        exptime = command['exptime']
+        bytes = command['bytes'].to_i()
         data = self.get_data(client, bytes)
-        noreply = !cmd['noreply'].nil?
+        noreply = !command['noreply'].nil?
 
         response = @memc.set(key, flags, exptime, bytes, data)
         client.puts(server_response(response)) unless noreply
     end
 
-    def add(client, cmd)
-        key = cmd['key']
-        flags = cmd['flags']
-        exptime = cmd['exptime']
-        bytes = cmd['bytes'].to_i()
+    def add(client, command)
+        key = command['key']
+        flags = command['flags']
+        exptime = command['exptime']
+        bytes = command['bytes'].to_i()
         data = self.get_data(client, bytes)
-        noreply = !cmd['noreply'].nil?
+        noreply = !command['noreply'].nil?
 
         response = @memc.add(key, flags, exptime, bytes, data)
         client.puts(server_response(response)) unless noreply
     end
 
-    def replace(client, cmd)
-        key = cmd['key']
-        flags = cmd['flags']
-        exptime = cmd['exptime']
-        bytes = cmd['bytes'].to_i()
+    def replace(client, command)
+        key = command['key']
+        flags = command['flags']
+        exptime = command['exptime']
+        bytes = command['bytes'].to_i()
         data = self.get_data(client, bytes)
-        noreply = !cmd['noreply'].nil?
+        noreply = !command['noreply'].nil?
 
         response = @memc.replace(key, flags, exptime, bytes, data)
         client.puts(server_response(response)) unless noreply
     end
 
-    def append(client, cmd)
-        key = cmd['key']
-        bytes = cmd['bytes'].to_i()
+    def append(client, command)
+        key = command['key']
+        bytes = command['bytes'].to_i()
         data = self.get_data(client, bytes)
-        noreply = !cmd['noreply'].nil?
+        noreply = !command['noreply'].nil?
 
         response = @memc.append(key, bytes, data)
         client.puts(server_response(response)) unless noreply
     end
 
-    def prepend(client, cmd)
-        key = cmd['key']
-        bytes = cmd['bytes'].to_i()
+    def prepend(client, command)
+        key = command['key']
+        bytes = command['bytes'].to_i()
         data = self.get_data(client, bytes)
-        noreply = !cmd['noreply'].nil?
+        noreply = !command['noreply'].nil?
 
         response = @memc.prepend(key, bytes, data)
         client.puts(server_response(response)) unless noreply
 
     end
 
-    def cas(client, cmd)
-        key = cmd['key']
-        flags = cmd['flags']
-        exptime = cmd['exptime']
-        bytes = cmd['bytes'].to_i()
+    def cas(client, command)
+        key = command['key']
+        flags = command['flags']
+        exptime = command['exptime']
+        bytes = command['bytes'].to_i()
         data = self.get_data(client, bytes)
-        cas_id = cmd['cas_id'].to_i()
-        noreply = !cmd['noreply'].nil?
+        cas_id = command['cas_id'].to_i()
+        noreply = !command['noreply'].nil?
 
         response = @memc.cas(key, flags, exptime, bytes, cas_id, data)
         client.puts(server_response(response)) unless noreply
