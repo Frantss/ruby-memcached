@@ -1,6 +1,4 @@
 require 'concurrent'
-require_relative './Responses.rb'
-require_relative './Item.rb'
 
 class Memcached
 
@@ -76,3 +74,8 @@ class Memcached
         end
     end
 end
+
+require_relative './memcached/Responses.rb'
+require_relative './memcached/Item.rb'
+require_relative './memcached/server/Server.rb'
+

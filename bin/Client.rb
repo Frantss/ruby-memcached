@@ -1,8 +1,11 @@
+#!/usr/bin/env ruby
+
 require 'socket'
-require_relative '../server/Statics/Commands.rb'
+require_relative '../lib/memcached/server/static/Commands.rb'
 
-
-server = TCPSocket.new('localhost', 5001)
+host = ARGV[0]
+port = ARGV[1]
+server = TCPSocket.new(host, port)
 
 listener = Thread.new {
     while response = server.gets()
@@ -13,7 +16,7 @@ listener = Thread.new {
 speaker = Thread.new {
     while true
         print("> ")
-        server.puts(gets())
+        server.puts(STDIN.gets())
         break if $_ =~ Commands::END_REGEX
         sleep(0.1)
     end

@@ -1,4 +1,4 @@
-class Item
+class Memcached::Item
 
     attr_accessor :key
     attr_accessor :data

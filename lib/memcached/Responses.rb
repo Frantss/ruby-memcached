@@ -1,6 +1,6 @@
 require 'ruby-enum'
 
-class Responses
+class Memcached::Responses
     include Ruby::Enum
 
     define :stored, 'STORED'

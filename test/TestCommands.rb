@@ -1,6 +1,4 @@
-require_relative '../Memcached.rb'
-require_relative '../Responses.rb'
-require_relative '../Item.rb'
+require_relative '../lib/Memcached.rb'
 require 'test/unit'
 
 class TestCommands < Test::Unit::TestCase
@@ -10,7 +8,7 @@ class TestCommands < Test::Unit::TestCase
         memc = Memcached.new()
 
         ret_value = memc.set('test_key', 0, 3600, 4, 'test_data')
-        assert_equal(Responses.stored, ret_value, 'Error on adding value, unexpected enum returned')
+        assert_equal(Memcached::Responses.stored, ret_value, 'Error on adding value, unexpected enum returned')
         assert_not_nil(memc.storage['test_key'], 'Error on adding value, value not added')
     end
 
@@ -43,7 +41,7 @@ class TestCommands < Test::Unit::TestCase
     def test_add_adding_not_existing_item
         memc = Memcached.new()
         ret_value = memc.add('test_key', 0, 3600, 4, 'test_data')
-        assert_equal(Responses.stored, ret_value, 'Error on adding value, unexpected enum returned')
+        assert_equal(Memcached::Responses.stored, ret_value, 'Error on adding value, unexpected enum returned')
         
         actual = memc.storage['test_key']
         assert_not_nil(actual, 'Error on adding value, value not added')
@@ -54,10 +52,10 @@ class TestCommands < Test::Unit::TestCase
         memc.set('test_key', 0, 3600, 13, 'test_data_old')
 
         ret_value = memc.add('test_key', 0, 3600, 13, 'test_data_new')
-        assert_equal(Responses.not_stored, ret_value, 'Error on adding value, unexpected enum returned')
+        assert_equal(Memcached::Responses.not_stored, ret_value, 'Error on adding value, unexpected enum returned')
 
         actual = memc.storage['test_key'].data
-        assert_equal('test_data_old', actual, 'Error on adding value, value changed') if ret_value != Responses.stored
+        assert_equal('test_data_old', actual, 'Error on adding value, value changed') if ret_value != Memcached::Responses.stored
         assert_not_equal('test_data_new', actual, 'Error on adding value, value changed')
     end
 
@@ -66,7 +64,7 @@ class TestCommands < Test::Unit::TestCase
         memc.set('test_key', 0, 3600, 13, 'test_data_old')
 
         ret_value = memc.replace('test_key', 0, 3600, 13, 'test_data_new')
-        assert_equal(Responses.stored, ret_value, 'Error on replacing value, unexpected enum returned')
+        assert_equal(Memcached::Responses.stored, ret_value, 'Error on replacing value, unexpected enum returned')
 
         actual = memc.storage['test_key'].data
         assert_equal('test_data_new', actual, 'Error on replacing value, value didn`t changed')
@@ -76,7 +74,7 @@ class TestCommands < Test::Unit::TestCase
         memc = Memcached.new()
 
         ret_value = memc.replace('test_key', 0, 3600, 13, 'test_data_new')
-        assert_equal(Responses.not_stored, ret_value, 'Error on replacing value, unexpected enum returned')
+        assert_equal(Memcached::Responses.not_stored, ret_value, 'Error on replacing value, unexpected enum returned')
 
         actual = memc.storage['test_key']
         assert_nil(actual, 'Error on replacing value, unexisting value was set by replace method')
@@ -87,7 +85,7 @@ class TestCommands < Test::Unit::TestCase
         memc.set('test_key', 0, 3600, 9, 'test_data')
 
         ret_value = memc.prepend('test_key', 7, 'prefix_')
-        assert_equal(Responses.stored, ret_value, 'Error on prepending value, unexpected enum returned')
+        assert_equal(Memcached::Responses.stored, ret_value, 'Error on prepending value, unexpected enum returned')
 
         actual = memc.storage['test_key'].data
         assert_equal('prefix_test_data', actual, 'Error on prepending value, value didn`t change accordingly')
@@ -97,7 +95,7 @@ class TestCommands < Test::Unit::TestCase
         memc = Memcached.new()
 
         ret_value = memc.prepend('test_key', 7, 'prefix_')
-        assert_equal(Responses.not_stored, ret_value, 'Error on prepending value, unexpected enum returned')
+        assert_equal(Memcached::Responses.not_stored, ret_value, 'Error on prepending value, unexpected enum returned')
 
         actual = memc.storage['test_key']
         assert_nil(actual, 'Error on prepending value, unexisting value was set by prepend method')
@@ -108,7 +106,7 @@ class TestCommands < Test::Unit::TestCase
         memc.set('test_key', 0, 3600, 9, 'test_data')
 
         ret_value = memc.append('test_key', 7, '_posfix')
-        assert_equal(Responses.stored, ret_value, 'Error on appending value, unexpected enum returned')
+        assert_equal(Memcached::Responses.stored, ret_value, 'Error on appending value, unexpected enum returned')
 
         actual = memc.storage['test_key'].data
         assert_equal('test_data_posfix', actual, 'Error on appending value, value didn`t change accordingly')
@@ -118,7 +116,7 @@ class TestCommands < Test::Unit::TestCase
         memc = Memcached.new()
 
         ret_value = memc.append('test_key', 7, '_posfix')
-        assert_equal(Responses.not_stored, ret_value, 'Error on appending value, unexpected enum returned')
+        assert_equal(Memcached::Responses.not_stored, ret_value, 'Error on appending value, unexpected enum returned')
 
         actual = memc.storage['test_key']
         assert_nil(actual, 'Error on appending value, unexisting value was set by prepend method')
@@ -145,7 +143,7 @@ class TestCommands < Test::Unit::TestCase
 
         cas_id = memc.storage['test_key'].cas_id
         ret_value = memc.cas('test_key', 0, 3600, 13, cas_id, 'test_data_new')
-        assert_equal(Responses.stored, ret_value, 'Error on cas updating, unexpected enum returned')
+        assert_equal(Memcached::Responses.stored, ret_value, 'Error on cas updating, unexpected enum returned')
 
         actual = memc.storage['test_key'].data
         assert_equal('test_data_new', actual, 'Error on cas updating, new value was not set')
@@ -156,7 +154,7 @@ class TestCommands < Test::Unit::TestCase
         memc.set('test_key', 0, 3600, 13, 'test_data_old')
 
         ret_value = memc.cas('test_key', 0, 3600, 13, 45, 'test_data_new')
-        assert_equal(Responses.exists, ret_value, 'Error on cas updating, unespected enum returned')
+        assert_equal(Memcached::Responses.exists, ret_value, 'Error on cas updating, unespected enum returned')
 
         actual = memc.storage['test_key'].data
         assert_equal('test_data_old', actual, 'Error on cas updating, old value was change')
@@ -166,6 +164,6 @@ class TestCommands < Test::Unit::TestCase
         memc = Memcached.new()
 
         ret_value = memc.cas('test_key', 0, 3600, 13, 0, 'test_data')
-        assert_equal(Responses.not_found, ret_value, 'Error on cas updating, unespected enum returned')
+        assert_equal(Memcached::Responses.not_found, ret_value, 'Error on cas updating, unespected enum returned')
     end
 end
