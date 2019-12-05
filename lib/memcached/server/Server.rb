@@ -77,13 +77,11 @@ class Memcached::Server
     end
 
     def get_data(client, bytes)
-        data = ""
-        (0..bytes).each do data << client.getc() end
-        return data.chomp()
+        return client.recv(bytes).chomp()
     end
 
-    def get(client, data)
-        keys = data['keys'].split(' ')
+    def get(client, cmd)
+        keys = cmd['keys'].split(' ')
         items = @memc.get_multi(keys)
 
         for item in items
@@ -92,8 +90,8 @@ class Memcached::Server
         client.puts(Responses::END_RESPONSE)
     end
 
-    def gets(client, data)
-        keys = data['keys'].split(' ')
+    def gets(client, cmd)
+        keys = cmd['keys'].split(' ')
         items = @memc.get_multi(keys)
 
         for item in items
@@ -102,71 +100,71 @@ class Memcached::Server
         client.puts(Responses::END_RESPONSE)
     end
 
-    def set(client, data)
-        key = $~['key']
-        flags = $~['flags']
-        exptime = $~['exptime']
-        bytes = $~['bytes'].to_i()
+    def set(client, cmd)
+        key = cmd['key']
+        flags = cmd['flags']
+        exptime = cmd['exptime']
+        bytes = cmd['bytes'].to_i()
         data = self.get_data(client, bytes)
-        noreply = !$~['noreply'].nil?
+        noreply = !cmd['noreply'].nil?
 
-        response = @memc.set(key, flags, exptime, bytes, data, noreply)
+        response = @memc.set(key, flags, exptime, bytes, data)
         client.puts(server_response(response)) unless noreply
     end
 
-    def add(client, data)
-        key = $~['key']
-        flags = $~['flags']
-        exptime = $~['exptime']
-        bytes = $~['bytes'].to_i()
+    def add(client, cmd)
+        key = cmd['key']
+        flags = cmd['flags']
+        exptime = cmd['exptime']
+        bytes = cmd['bytes'].to_i()
         data = self.get_data(client, bytes)
-        noreply = !$~['noreply'].nil?
+        noreply = !cmd['noreply'].nil?
 
-        response = @memc.add(key, flags, exptime, bytes, data, noreply)
+        response = @memc.add(key, flags, exptime, bytes, data)
         client.puts(server_response(response)) unless noreply
     end
 
-    def replace(client, data)
-        key = $~['key']
-        flags = $~['flags']
-        exptime = $~['exptime']
-        bytes = $~['bytes'].to_i()
+    def replace(client, cmd)
+        key = cmd['key']
+        flags = cmd['flags']
+        exptime = cmd['exptime']
+        bytes = cmd['bytes'].to_i()
         data = self.get_data(client, bytes)
-        noreply = !$~['noreply'].nil?
+        noreply = !cmd['noreply'].nil?
 
-        response = @memc.replace(key, flags, exptime, bytes, data, noreply)
+        response = @memc.replace(key, flags, exptime, bytes, data)
         client.puts(server_response(response)) unless noreply
     end
 
-    def append(client, data)
-        key = $~['key']
-        bytes = $~['bytes'].to_i()
+    def append(client, cmd)
+        key = cmd['key']
+        bytes = cmd['bytes'].to_i()
         data = self.get_data(client, bytes)
-        noreply = !$~['noreply'].nil?
+        noreply = !cmd['noreply'].nil?
 
         response = @memc.append(key, bytes, data)
         client.puts(server_response(response)) unless noreply
     end
 
-    def prepend(client, data)
-        key = $~['key']
-        bytes = $~['bytes'].to_i()
+    def prepend(client, cmd)
+        key = cmd['key']
+        bytes = cmd['bytes'].to_i()
         data = self.get_data(client, bytes)
-        noreply = !$~['noreply'].nil?
+        noreply = !cmd['noreply'].nil?
 
         response = @memc.prepend(key, bytes, data)
         client.puts(server_response(response)) unless noreply
 
     end
 
-    def cas(client, data)
-        key = $~['key']
-        flags = $~['flags']
-        exptime = $~['exptime']
-        bytes = $~['bytes'].to_i()
+    def cas(client, cmd)
+        key = cmd['key']
+        flags = cmd['flags']
+        exptime = cmd['exptime']
+        bytes = cmd['bytes'].to_i()
         data = self.get_data(client, bytes)
-        cas_id = $~['cas_id'].to_i()
-        noreply = !$~['noreply'].nil?
+        cas_id = cmd['cas_id'].to_i()
+        noreply = !cmd['noreply'].nil?
 
         response = @memc.cas(key, flags, exptime, bytes, cas_id, data)
         client.puts(server_response(response)) unless noreply
