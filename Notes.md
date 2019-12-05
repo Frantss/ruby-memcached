@@ -41,10 +41,10 @@ from the server. These error strings come in three types:
 # Authentication
 
 Optional username/password token authentication (see -Y option). Used by
-sending a fake "set" command with any key:
+sending a fake `set` command with any key:
 
-`set <key> <flags> <exptime> <bytes>\r\n`
-
+Shape:  
+`set <key> <flags> <exptime> <bytes>\r\n`  
 `username password\r\n`
 
 key, flags, and exptime are ignored for authentication. Bytes is the length

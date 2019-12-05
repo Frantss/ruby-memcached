@@ -19,7 +19,8 @@ the items have been transmitted, the server sends the string `END\r\n` to indica
 
 Each item sent by the server looks like this:
 
-`VALUE <key> <flags> <bytes> [<cas unique>]\r\n <data block>\r\n`
+`VALUE <key> <flags> <bytes> [<cas unique>]\r\n`  
+`<data block>\r\n`
 
 - `<key>` is the key for the item being sent
 
@@ -43,7 +44,9 @@ deleted by a client).
 
 ## `set`, `add` and `replace`
 
-Shape: `<command name> <key> <flags> <exptime> <bytes> [noreply]\r\n <data block>\r\n`
+Shape:  
+`<command name> <key> <flags> <exptime> <bytes> [noreply]\r\n`  
+`<data block>\r\n`
 
 Where:
 
@@ -79,9 +82,9 @@ Where:
 
 ## `append` and `prepend`
 
-Shape:
-
-- `<command name> <key> <bytes> [noreply]\r\n <data block>\r\n`
+Shape:  
+`<command name> <key> <bytes> [noreply]\r\n`  
+`<data block>\r\n`
 
 Where:
 
@@ -93,7 +96,9 @@ Where:
 
 `cas` is a check and set operation which means "store this data but only if no one else has updated since I last fetched it."
 
-Shape: `cas <key> <flags> <exptime> <bytes> <cas unique> [noreply]\r\n <data block>\r\n`
+Shape:  
+`cas <key> <flags> <exptime> <bytes> <cas unique> [noreply]\r\n`  
+`<data block>\r\n`
 
 Where:
 
