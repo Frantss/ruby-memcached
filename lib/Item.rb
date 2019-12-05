@@ -7,6 +7,8 @@ class Item
     attr_accessor :bytes
     attr_accessor :cas_id
     
+    attr_accessor :lock
+
     def initialize(key, data, flags, exptime, bytes, cas_id)
         @key = key
         @data = data
@@ -14,5 +16,7 @@ class Item
         @bytes = bytes
         @exptime = exptime
         @cas_id = cas_id
+
+        @lock = Mutex.new()
     end
 end
