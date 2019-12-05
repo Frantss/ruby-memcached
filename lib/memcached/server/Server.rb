@@ -3,7 +3,6 @@ require 'concurrent'
 require_relative './static/Commands.rb'
 require_relative './static/Responses.rb'
 require_relative './static/Errors.rb'
-require_relative '../../Memcached.rb'
 
 class Memcached::Server
 

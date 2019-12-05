@@ -1,7 +1,7 @@
 require_relative '../lib/Memcached.rb'
-require 'test/unit'
+require 'minitest/autorun'
 
-class TestCommands < Test::Unit::TestCase
+class TestCommands < Minitest::Test
 
 
     def test_set_setting_item
@@ -9,7 +9,7 @@ class TestCommands < Test::Unit::TestCase
 
         ret_value = memc.set('test_key', 0, 3600, 4, 'test_data')
         assert_equal(Memcached::Responses.stored, ret_value, 'Error on adding value, unexpected enum returned')
-        assert_not_nil(memc.storage['test_key'], 'Error on adding value, value not added')
+        refute_nil(memc.storage['test_key'], 'Error on adding value, value not added')
     end
 
     def test_get_getting_item
@@ -44,7 +44,7 @@ class TestCommands < Test::Unit::TestCase
         assert_equal(Memcached::Responses.stored, ret_value, 'Error on adding value, unexpected enum returned')
         
         actual = memc.storage['test_key']
-        assert_not_nil(actual, 'Error on adding value, value not added')
+        refute_nil(actual, 'Error on adding value, value not added')
     end
 
     def test_add_adding_existing_item
@@ -56,7 +56,7 @@ class TestCommands < Test::Unit::TestCase
 
         actual = memc.storage['test_key'].data
         assert_equal('test_data_old', actual, 'Error on adding value, value changed') if ret_value != Memcached::Responses.stored
-        assert_not_equal('test_data_new', actual, 'Error on adding value, value changed')
+        refute_equal('test_data_new', actual, 'Error on adding value, value changed')
     end
 
     def test_replace_existing_item
