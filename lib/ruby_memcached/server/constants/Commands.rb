@@ -11,7 +11,11 @@ module RubyMemcached
         PREPEND_REGEX = /^prepend (?<key>[a-zA-Z0-9]+) (?<bytes>[0-9]+)(?<noreply> noreply)?\n/
     
         CAS_REGEX = /^cas (?<key>[a-zA-Z0-9]+) (?<flags>[0-9]+) (?<exptime>[0-9]+) (?<bytes>[0-9]+) (?<cas_id>[0-9]+)(?<noreply> noreply)?\n/
-    
+
+        DELTE_REGEX = /^delete (?<key>[a-zA-Z0-9]+)(?<noreply> noreply)?\n/
+        INCR_REGEX = /^incr (?<key>[a-zA-Z0-9]+) (?<value>[0-9]+)(?<noreply> noreply)?\n/
+        DECR_REGEX = /^decr (?<key>[a-zA-Z0-9]+) (?<value>[0-9]+)(?<noreply> noreply)?\n/
+
         DATA_BLOCK_REGEX = /.*\n/
     
         END_REGEX = /END\n/

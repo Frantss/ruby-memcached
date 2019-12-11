@@ -180,9 +180,16 @@ module RubyMemcached
                     Server::Responses::NOT_FOUND
             end
         end
+
+        def start_gc()
+            while true
+                puts('Garbage collector deleted: %d' % @memc.check_exptimes())
+                sleep(5)
+            end
+        end
     end
 end
 
-require_relative './Commands.rb'
-require_relative './Responses.rb'
-require_relative './Errors.rb'
+require_relative './constants/Commands.rb'
+require_relative './constants/Responses.rb'
+require_relative './constants/Errors.rb'

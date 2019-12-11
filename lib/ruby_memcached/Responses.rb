@@ -8,5 +8,6 @@ module RubyMemcached
         define :not_stored, 'NOT_STORED'
         define :exists, 'EXISTS'
         define :not_found, 'NOT_FOUND'
+        define :deleted, 'DELETED'
     end
 end

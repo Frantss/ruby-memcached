@@ -104,6 +104,30 @@ Where:
 
 - `<cas unique>` is a unique 64-bit value of an existing entry. Clients should use the value returned from the `gets` command when issuing `cas` updates.
 
+## `delete`
+
+Allows to delete a key-value pair.
+
+Shape:  
+`delete <key> [noreplay]\r\n`
+
+## `incr` and `decr`
+
+Allows to increment and decrement the data if it is of a numeric type.
+
+Shape:  
+`<command name> <key> <value> [noreply]\r\n`
+
+Where:
+
+- `<command name>`
+  - `incr` means "increment this data"
+  - `decr` means "decrement this data"
+
+Response:
+
+- `<value>\r\n` where `value` is the resulting incrementing or decrementing th data
+
 ## Response
 
 - `STORED\r\n`, to indicate success.
@@ -112,4 +136,6 @@ Where:
 
 - `EXISTS\r\n` to indicate that the item you are trying to store with a `cas` command has been modified since you last fetched it.
 
-- `NOT_FOUND\r\n` to indicate that the item you are trying to store with a `cas` command did not exist.
+- `NOT_FOUND\r\n` to indicate that the item you are trying to store with a `cas`, `incr`, `decr` and `delete` command did not exist.
+
+- `DELETED\r\n` to indicate an element has been correctly eliminated.

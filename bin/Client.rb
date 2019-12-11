@@ -1,7 +1,9 @@
 #!/usr/bin/env ruby
 
 require 'socket'
-require 'ruby_memcached'
+# require 'ruby_memcached'
+require_relative '../lib/ruby_memcached.rb'
+
 
 host = ARGV[0]
 port = ARGV[1]
