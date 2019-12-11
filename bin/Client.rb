@@ -1,7 +1,7 @@
 #!/usr/bin/env ruby
 
 require 'socket'
-require_relative '../lib/memcached/server/static/Commands.rb'
+require 'ruby_memcached'
 
 host = ARGV[0]
 port = ARGV[1]
@@ -17,7 +17,7 @@ speaker = Thread.new {
     while true
         print("> ")
         server.puts(STDIN.gets())
-        break if $_ =~ Commands::END_REGEX
+        break if $_ =~ RubyMemcached::Server::Commands::END_REGEX
         sleep(0.1)
     end
 }
