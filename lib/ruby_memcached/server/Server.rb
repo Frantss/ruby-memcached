@@ -192,10 +192,10 @@ module RubyMemcached
             end
         end
 
-        def start_gc()
+        def start_gc(interval)
             while true
                 puts('Garbage collector deleted: %d' % @memc.check_exptimes())
-                sleep(5)
+                sleep(interval)
             end
         end
     end

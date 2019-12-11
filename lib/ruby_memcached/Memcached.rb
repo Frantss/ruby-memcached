@@ -10,6 +10,7 @@ module RubyMemcached
         end
     
         def get(key)
+            self.check_exptime(key)
             return @storage[key]
         end
     
@@ -23,6 +24,8 @@ module RubyMemcached
         end
     
         def set(key, flags, exptime, bytes, data)
+            self.check_exptime(key)
+
             if(@storage.key?(key))
                 cas_id = @storage[key].cas_id + 1
             else
@@ -34,6 +37,8 @@ module RubyMemcached
         end
     
         def add(key, flags, exptime, bytes, data)
+            self.check_exptime(key)
+
             return Responses.not_stored if @storage.key?(key)
             new_item = Item.new(key, data, flags, exptime, bytes, 0)
             @storage.store(key, new_item)
@@ -41,6 +46,8 @@ module RubyMemcached
         end
     
         def replace(key, flags, exptime, bytes, data)
+            self.check_exptime(key)
+
             return Responses.not_stored unless @storage.key?(key)
             cas_id = @storage[key].cas_id + 1
             new_item = Item.new(key, data, flags, exptime, bytes, cas_id)
@@ -49,6 +56,8 @@ module RubyMemcached
         end
     
         def append(key, bytes, data)
+            self.check_exptime(key)
+
             return Responses.not_stored unless @storage.key?(key)
             @storage[key].data.concat(data)
             @storage[key].cas_id += 1
@@ -56,6 +65,8 @@ module RubyMemcached
         end
     
         def prepend(key, bytes, data)
+            self.check_exptime(key)
+
             return Responses.not_stored unless @storage.key?(key)
             @storage[key].data.prepend(data)
             @storage[key].cas_id += 1
@@ -63,6 +74,8 @@ module RubyMemcached
         end
     
         def cas(key, flags, exptime, bytes, cas_id, data)
+            self.check_exptime(key)
+
             return Responses.not_found unless @storage.key?(key)
             
             old_item = @storage[key]
@@ -81,17 +94,24 @@ module RubyMemcached
             return Responses.deleted
         end
 
+        def check_exptime(key)
+            value = @storage[key]
+            return true if value.nil?() || value.exptime.nil?()
+
+            current_time = Time.now().getutc()
+
+            if (current_time > value.exptime)
+                @storage.delete(key)
+                return false
+            end 
+
+            return true
+        end
+
         def check_exptimes()
             deleted = 0
-            @storage.each do | key, value|
-                next if value.exptime.nil?
-
-                current_time = Time.now().getutc()
-
-                if (current_time > value.exptime)
-                    @storage.delete(key)
-                    deleted += 1 
-                end
+            @storage.each_key do | key |
+                delete += 1 unless self.check_exptime(key)
             end
             return deleted
         end
