@@ -15,10 +15,20 @@ module RubyMemcached
             @data = data
             @flags = flags
             @bytes = bytes
-            @exptime = exptime
+            @exptime = get_exptime(exptime.to_i)
             @cas_id = cas_id
-    
+
             @lock = Mutex.new()
         end
+    end
+end
+
+def get_exptime(exptime)
+    if (exptime == 0)
+        return nil
+    elsif (exptime < 1592000)
+        return Time.now().getutc() + exptime
+    else
+        return Time.at(exptime)
     end
 end
