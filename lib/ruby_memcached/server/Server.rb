@@ -65,7 +65,10 @@ module RubyMemcached
     
                 when Server::Commands::CAS_REGEX
                     self.cas(client, $~)
-    
+
+                when Server::Commands::DELETE_REGEX
+                    self.delete(client, $~)
+
                 when Server::Commands::END_REGEX
                     return false;
                 else
@@ -165,6 +168,14 @@ module RubyMemcached
             noreply = !command['noreply'].nil?
     
             response = @memc.cas(key, flags, exptime, bytes, cas_id, data)
+            client.puts(server_response(response)) unless noreply
+        end
+
+        def delete(client, command)
+            key = command['key']
+            noreply = !command['noreply'].nil?
+
+            response = @memc.delete(key)
             client.puts(server_response(response)) unless noreply
         end
     

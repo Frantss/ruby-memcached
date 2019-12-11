@@ -168,4 +168,23 @@ class TestCommands < Minitest::Test
         ret_value = memc.cas('test_key', 0, 3600, 13, 0, 'test_data')
         assert_equal(Memcached::Responses.not_found, ret_value, 'Error on cas updating, unespected enum returned')
     end
+
+    def test_delete_existing_item
+        memc = Memcached.new()
+        memc.set('test_key', 0, 3600, 9, 'test_data')
+
+        ret_value = memc.delete('test_key')
+        assert_equal(Memcached::Responses.deleted, ret_value, 'Error on deleting item, wrong enum returned')
+
+        actual = memc.storage['test_key']
+        assert_nil(actual, 'Error on deleting, item wasn`t eliminated')
+    end
+    
+    def test_delete_not_existing_item
+        memc = Memcached.new()
+
+        ret_value = memc.delete('test_key')
+        assert_equal(Memcached::Responses.not_found, ret_value, 'Error on deleting item, wrong enum returned')
+    end
+    
 end
