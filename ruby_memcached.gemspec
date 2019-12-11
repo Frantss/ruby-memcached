@@ -1,6 +1,6 @@
 Gem::Specification.new do |s|
     s.name        = 'ruby_memcached'
-    s.version     = '0.0.1'
+    s.version     = '1.0.0.pre'
     s.date        = '2019-12-05'
     s.summary     = 'Simple ruby memcached implementation'
     s.description = 'A simple memcached implementation for Moove-It code challenge'
