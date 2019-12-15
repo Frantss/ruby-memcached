@@ -1,7 +1,7 @@
 #!/usr/bin/env ruby
 
-require_relative '../lib/ruby_memcached.rb'
-# require 'ruby_memcached'
+require_relative '../lib/ruby-memcached.rb'
+# require 'ruby-memcached'
 
 puts('Creating server...')
 host = ARGV[0]

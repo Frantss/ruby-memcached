@@ -60,6 +60,7 @@ module RubyMemcached
                 when Server::Commands::APPEND_REGEX
                     self.append(client, $~)
     
+                    
                 when Server::Commands::PREPEND_REGEX
                     self.prepend(client, $~)
     
@@ -78,7 +79,7 @@ module RubyMemcached
         end
     
         def get_data(client, bytes)
-            return client.recv(bytes).chomp()
+            return client.recv(bytes + 1).chomp()
         end
     
         def get(client, command)
@@ -189,13 +190,17 @@ module RubyMemcached
                     Server::Responses::EXISTS
                 when Memcached::Responses.not_found
                     Server::Responses::NOT_FOUND
+                when Memcached::Responses.deleted
+                    Server::Responses::DELETE_REGEX
             end
         end
 
-        def start_gc(interval)
-            while true
-                puts('Garbage collector deleted: %d' % @memc.check_exptimes())
+        def start_gc(interval, loops = nil)
+
+            while loops.nil?() || loops > 0
                 sleep(interval)
+                puts('Garbage collector deleted: %d' % @memc.check_exptimes())
+                loops -= 1 unless loops.nil?()
             end
         end
     end

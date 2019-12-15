@@ -1,4 +1,4 @@
-require_relative '../lib/ruby_memcached/Memcached.rb'
+require_relative '../lib/ruby-memcached/Memcached.rb'
 include RubyMemcached
 
 require 'minitest/autorun'
