@@ -1,7 +1,6 @@
 #!/usr/bin/env ruby
 
 require 'socket'
-# require 'ruby-memcached'
 require_relative '../lib/ruby-memcached.rb'
 
 
