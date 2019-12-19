@@ -1,9 +1,7 @@
 require 'socket'
 
 require_relative './/Memcached.rb'
-require_relative './constants/CommandsRegex.rb'
-require_relative './constants/Responses.rb'
-require_relative './constants/Errors.rb'
+require_relative './Constants.rb'
 
 module RubyMemcached
     class Server
