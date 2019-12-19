@@ -1,4 +1,4 @@
-# memcached-ruby
+# RubyMemcached
 
 A simple memcached ruby implementation.
 Coded as part of [Moove-It coding-challenges](https://github.com/moove-it/coding-challenges/blob/master/ruby.md)
