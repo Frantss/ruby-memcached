@@ -58,6 +58,7 @@ module RubyMemcached
 
             return Responses.not_stored unless @storage.key?(key)
             @storage[key].data.concat(data)
+            @storage[key].bytes += bytes
             @storage[key].cas_id += 1
             return Responses.stored
         end
@@ -67,6 +68,7 @@ module RubyMemcached
 
             return Responses.not_stored unless @storage.key?(key)
             @storage[key].data.prepend(data)
+            @storage[key].bytes += bytes
             @storage[key].cas_id += 1
             return Responses.stored
         end

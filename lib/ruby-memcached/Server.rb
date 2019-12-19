@@ -101,7 +101,7 @@ module RubyMemcached
             items = @memc.get_multi(keys)
     
             for item in items
-                client.puts(Responses.get % [item.key, item.flags, item.bytes, item.cas_id, item.data]) unless item.nil?()
+                client.puts(Responses.gets % [item.key, item.flags, item.bytes, item.cas_id, item.data]) unless item.nil?()
             end
             client.puts(Responses.end)
         end

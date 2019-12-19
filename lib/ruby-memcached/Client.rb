@@ -22,18 +22,19 @@ module RubyMemcached
             items = []
 
             loop do
-                response = @server.gets()
-                puts response
-                case response
+                case @server.gets()
                     when ResponsesRegex.get
                         key = $~['key']
                         flags = $~['flags'].to_i()
                         bytes = $~['bytes'].to_i()
                         data = @server.read(bytes + 1).chomp()
 
-                        items << Memcached::Item.new(key, flags, 0, bytes, nil, data)
+                        items << Memcached::Item.new(key, data, flags, 0, bytes, nil)
 
                     when ResponsesRegex.end
+                        break
+
+                    when /.*ERROR.*/
                         break
                 end
             end
@@ -43,7 +44,7 @@ module RubyMemcached
 
         def gets(keys)
             keys_string = keys.reduce { |ss, s| ss + ' ' + s }
-            @server.puts(Commands.gets % key_string)
+            @server.puts(Commands.gets % keys_string)
 
             items = []
 
@@ -51,14 +52,17 @@ module RubyMemcached
                 case @server.gets()
                     when ResponsesRegex.gets
                         key = $~['key']
-                        flags $~['flags'].to_i()
+                        flags = $~['flags'].to_i()
                         bytes = $~['bytes'].to_i()
                         cas_id = $~['cas_id'].to_i()
-                        data = @server.recv(bytes + 1).chomp()
+                        data = @server.read(bytes + 1).chomp()
 
-                        items << Memcached::Item.new(key, flags, 0, bytes, cas_id, data)
+                        items << Memcached::Item.new(key, data, flags, 0, bytes, cas_id)
 
                     when ResponsesRegex.end
+                        break
+
+                    when /.*ERROR.*/
                         break
                 end
             end
@@ -66,34 +70,25 @@ module RubyMemcached
             return items
         end
 
-        def set(key, flags, exptime, byte, data)
+        def set(key, flags, exptime, bytes, data)
             @server.puts(Commands.set % [
                 key,
                 flags,
                 exptime,
-                byte,
+                bytes,
                 '',
                 data
             ])
-            
-            puts(Commands.set % [
-                key,
-                flags,
-                exptime,
-                byte,
-                '',
-                data
-            ]) 
 
             return Responses.to_h[Responses.key @server.gets()]           
         end
 
-        def add(key, flags, exptime, byte, data)
+        def add(key, flags, exptime, bytes, data)
             @server.puts(Commands.add % [
                 key,
                 flags,
                 exptime,
-                byte,
+                bytes,
                 '',
                 data
             ])
@@ -101,12 +96,12 @@ module RubyMemcached
             return Responses.to_h[Responses.key @server.gets()]           
         end
 
-        def replace(key, flags, exptime, byte, data)
+        def replace(key, flags, exptime, bytes, data)
             @server.puts(Commands.replace % [
                 key,
                 flags,
                 exptime,
-                byte,
+                bytes,
                 '',
                 data
             ])
@@ -117,7 +112,7 @@ module RubyMemcached
         def append(key, bytes, data)
             @server.puts(Commands.append % [
                 key,
-                byte,
+                bytes,
                 '',
                 data
             ])
@@ -126,9 +121,9 @@ module RubyMemcached
         end
 
         def prepend(key, bytes, data)
-            @server.puts(Commands.prepend % [
+            @server.puts(Commands._prepend % [
                 key,
-                byte,
+                bytes,
                 '',
                 data
             ])
@@ -136,12 +131,12 @@ module RubyMemcached
             return Responses.to_h[Responses.key @server.gets()]                       
         end
 
-        def cas(key, flags, exptime, byte, cas_id, data)
-            @server.puts(Commands.replace % [
+        def cas(key, flags, exptime, bytes, cas_id, data)
+            @server.puts(Commands.cas % [
                 key,
                 flags,
                 exptime,
-                byte,
+                bytes,
                 cas_id,
                 '',
                 data
@@ -153,6 +148,14 @@ module RubyMemcached
         def delete(key)
             @server.puts(Commands.delete % key)
             return Responses.to_h[Responses.key @server.gets()]        
+        end
+
+        def end()
+            @server.puts(Commands.end)
+        end
+
+        def reconnect()
+            @server = TCPSocket.new(@host, @port)
         end
     end
 end
