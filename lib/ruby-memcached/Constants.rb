@@ -1,0 +1,5 @@
+require_relative './constants/Commands.rb'
+require_relative './constants/CommandsRegex.rb'
+require_relative './constants/Errors.rb'
+require_relative './constants/Responses.rb'
+require_relative './constants/ResponsesRegex.rb'
