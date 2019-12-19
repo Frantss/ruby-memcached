@@ -2,7 +2,7 @@ require 'rake'
 
 Gem::Specification.new do |spec|
     spec.name        = 'ruby-memcached'
-    spec.version     = '0.1.0'
+    spec.version     = '1.0.0.pre'
     spec.date        = '2019-12-05'
     spec.summary     = 'Simple ruby memcached implementation'
     spec.description = 'A simple memcached implementation for Moove-It code challenge'
