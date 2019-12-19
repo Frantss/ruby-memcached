@@ -114,4 +114,4 @@ st.exit()
 
 ## Class structure
 
-![alt text](https://github.com/Frantss/ruby-memcached/blob/master/Class-diagram.md "Class diagram")
+![alt text](https://github.com/Frantss/ruby-memcached/blob/master/other/Class-diagram.md "Class diagram")
