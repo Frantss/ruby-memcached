@@ -1,3 +1,5 @@
+require 'rake'
+
 Gem::Specification.new do |spec|
     spec.name        = 'ruby-memcached'
     spec.version     = '1.0.0'
@@ -6,8 +8,8 @@ Gem::Specification.new do |spec|
     spec.description = 'A simple memcached implementation for Moove-It code challenge'
     spec.authors     = ['Francisco Bongiovanni']
     spec.email       = 'Frantss.Bongiovanni@gmail.com'
-    spec.files       = ['lib/ruby-memcached.rb', 'lib/ruby-memcached/Memcached.rb', 'lib/ruby-memcached/Item.rb', 'lib/ruby-memcached/Responses.rb', 'lib/ruby-memcached/server/Server.rb', 'lib/ruby-memcached/server/constants/Commands.rb', 'lib/ruby-memcached/server/constants/Errors.rb', 'lib/ruby-memcached/server/constants/Responses.rb' ]
-    spec.executables = ['Client.rb', 'Server.rb']
+    spec.files       = FileList[ 'lib/**.rb', 'lib/ruby-memcached/**.rb', 'lib/ruby-memcached/constants/**.rb'].to_a()
+    spec.executables = ['memcached-client.rb', 'memcached-server.rb']
     spec.homepage    = 'https://rubygems.org/gems/ruby-memcached'
     spec.license     = 'MIT'
     spec.metadata    = {

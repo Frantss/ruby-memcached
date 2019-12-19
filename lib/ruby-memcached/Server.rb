@@ -1,26 +1,29 @@
 require 'socket'
 
-require_relative '../Memcached.rb'
+require_relative './/Memcached.rb'
+require_relative './constants/CommandsRegex.rb'
+require_relative './constants/Responses.rb'
+require_relative './constants/Errors.rb'
 
 module RubyMemcached
     class Server
 
-        attr_reader :hostname
+        attr_reader :host
         attr_reader :port
         attr_accessor :storage
     
-        def initialize(hostname, port)
-            @hostname = hostname
+        def initialize(host, port)
+            @host = host
             @port = port
-            @connection = TCPServer.new(hostname, port)
+            @connection = TCPServer.new(host, port)
             @memc = Memcached.new()
         end
-    
+
         def start
             loop do
                 Thread.start(@connection.accept()) do | client |
                 
-                    puts('Opening connection to %s' % [client.to_s])
+                    puts('Opening connection to %s' % client.to_s)
     
                     continue_condition = true
     
@@ -29,7 +32,8 @@ module RubyMemcached
                         begin
                             continue_condition = parse(command, client) unless command.nil?                        
                         rescue => e
-                            client.puts(Server::Errors::SERVER_ERROR % [ e.message ])
+                            client.puts(Errors.server_error % e.message)
+                            puts(Errors.server_error % e.message)
                         end
                         break unless continue_condition
                     end
@@ -42,44 +46,44 @@ module RubyMemcached
     
         def parse(command, client)
             case command
-                when Server::Commands::GET_REGEX
+                when CommandsRegex.get
                     self.get(client, $~)
     
-                when Server::Commands::GETS_REGEX
+                when CommandsRegex.gets
                     self.gets(client, $~)
     
-                when Server::Commands::SET_REGEX
+                when CommandsRegex.set
                     self.set(client, $~)
     
-                when Server::Commands::ADD_REGEX
+                when CommandsRegex.add
                     self.add(client, $~)
                     
-                when Server::Commands::REPLACE_REGEX
+                when CommandsRegex.replace
                     self.replace(client, $~)
     
-                when Server::Commands::APPEND_REGEX
+                when CommandsRegex.append
                     self.append(client, $~)
     
-                    
-                when Server::Commands::PREPEND_REGEX
+                when CommandsRegex.prepend
                     self.prepend(client, $~)
     
-                when Server::Commands::CAS_REGEX
+                when CommandsRegex.cas
                     self.cas(client, $~)
 
-                when Server::Commands::DELETE_REGEX
+                when CommandsRegex.delete
                     self.delete(client, $~)
 
-                when Server::Commands::END_REGEX
+                when CommandsRegex.end
                     return false;
                 else
-                    client.puts(Server::Errors::CLIENT_ERROR % [": Invalid command"])
+                    client.puts(Errors.client_error % [": Invalid command"])
             end
+            
             return true
         end
     
         def get_data(client, bytes)
-            return client.recv(bytes + 1).chomp()
+            return client.read(bytes + 1).chomp()
         end
     
         def get(client, command)
@@ -87,9 +91,9 @@ module RubyMemcached
             items = @memc.get_multi(keys)
     
             for item in items
-                client.puts(Server::Responses::GET_RESPONSE % [item.key, item.flags, item.bytes, item.data]) unless item.nil?()
+                client.puts(Responses.get % [item.key, item.flags, item.bytes, item.data]) unless item.nil?()
             end
-            client.puts(Server::Responses::END_RESPONSE)
+            client.puts(Responses.end)
         end
     
         def gets(client, command)
@@ -97,9 +101,9 @@ module RubyMemcached
             items = @memc.get_multi(keys)
     
             for item in items
-                client.puts(Server::Responses::GETS_RESPONSE % [item.key, item.flags, item.bytes, item.cas_id, item.data]) unless item.nil?()
+                client.puts(Responses.get % [item.key, item.flags, item.bytes, item.cas_id, item.data]) unless item.nil?()
             end
-            client.puts(Server::Responses::END_RESPONSE)
+            client.puts(Responses.end)
         end
     
         def set(client, command)
@@ -111,7 +115,7 @@ module RubyMemcached
             noreply = !command['noreply'].nil?
     
             response = @memc.set(key, flags, exptime, bytes, data)
-            client.puts(server_response(response)) unless noreply
+            client.puts(response) unless noreply
         end
     
         def add(client, command)
@@ -123,7 +127,7 @@ module RubyMemcached
             noreply = !command['noreply'].nil?
     
             response = @memc.add(key, flags, exptime, bytes, data)
-            client.puts(server_response(response)) unless noreply
+            client.puts(response) unless noreply
         end
     
         def replace(client, command)
@@ -135,7 +139,7 @@ module RubyMemcached
             noreply = !command['noreply'].nil?
     
             response = @memc.replace(key, flags, exptime, bytes, data)
-            client.puts(server_response(response)) unless noreply
+            client.puts(response) unless noreply
         end
     
         def append(client, command)
@@ -145,7 +149,7 @@ module RubyMemcached
             noreply = !command['noreply'].nil?
     
             response = @memc.append(key, bytes, data)
-            client.puts(server_response(response)) unless noreply
+            client.puts(response) unless noreply
         end
     
         def prepend(client, command)
@@ -155,7 +159,7 @@ module RubyMemcached
             noreply = !command['noreply'].nil?
     
             response = @memc.prepend(key, bytes, data)
-            client.puts(server_response(response)) unless noreply
+            client.puts(response) unless noreply
     
         end
     
@@ -169,7 +173,7 @@ module RubyMemcached
             noreply = !command['noreply'].nil?
     
             response = @memc.cas(key, flags, exptime, bytes, cas_id, data)
-            client.puts(server_response(response)) unless noreply
+            client.puts(response) unless noreply
         end
 
         def delete(client, command)
@@ -177,22 +181,7 @@ module RubyMemcached
             noreply = !command['noreply'].nil?
 
             response = @memc.delete(key)
-            client.puts(server_response(response)) unless noreply
-        end
-    
-        def server_response(response)
-            case response
-                when Memcached::Responses.stored
-                    Server::Responses::STORED
-                when Memcached::Responses.not_stored
-                    Server::Responses::NOT_STORED
-                when Memcached::Responses.exists
-                    Server::Responses::EXISTS
-                when Memcached::Responses.not_found
-                    Server::Responses::NOT_FOUND
-                when Memcached::Responses.deleted
-                    Server::Responses::DELETE_REGEX
-            end
+            client.puts(response) unless noreply
         end
 
         def start_gc(interval, loops = nil)
@@ -205,7 +194,3 @@ module RubyMemcached
         end
     end
 end
-
-require_relative './constants/Commands.rb'
-require_relative './constants/Responses.rb'
-require_relative './constants/Errors.rb'

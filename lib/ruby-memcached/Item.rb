@@ -20,6 +20,10 @@ module RubyMemcached
 
             @lock = Mutex.new()
         end
+
+        def to_s()
+            return @key
+        end
     end
 end
 

@@ -18,7 +18,7 @@ speaker = Thread.new {
     while true
         print("> ")
         server.puts(STDIN.gets())
-        break if $_ =~ RubyMemcached::Server::Commands::END_REGEX
+        break if $_ =~ RubyMemcached::CommandsRegex.end
         sleep(0.1)
     end
 }

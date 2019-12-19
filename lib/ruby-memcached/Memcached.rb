@@ -24,8 +24,6 @@ module RubyMemcached
         end
     
         def set(key, flags, exptime, bytes, data)
-            self.check_exptime(key)
-
             if(@storage.key?(key))
                 cas_id = @storage[key].cas_id + 1
             else
@@ -33,7 +31,7 @@ module RubyMemcached
             end
             new_item = Item.new(key, data, flags, exptime, bytes, cas_id)
             @storage.store(key, new_item)
-            return Responses::stored
+            return Responses.stored
         end
     
         def add(key, flags, exptime, bytes, data)
@@ -119,4 +117,3 @@ module RubyMemcached
 end
 
 require_relative './Item.rb'
-require_relative './Responses.rb'
