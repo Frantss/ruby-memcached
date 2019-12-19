@@ -152,9 +152,11 @@ module RubyMemcached
 
         def end()
             @server.puts(Commands.end)
+            @server.close()
         end
 
         def reconnect()
+            @server.close()
             @server = TCPSocket.new(@host, @port)
         end
     end

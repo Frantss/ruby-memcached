@@ -5,10 +5,10 @@ Coded as part of [Moove-It coding-challenges](https://github.com/moove-it/coding
 
 ## Gem Installation
 
-The solution is uploaded to [RubyGems](https://rubygems.org/) at (ruby-memcached)[https://rubygems.org/gems/ruby-memcached]
+The solution is uploaded to [RubyGems](https://rubygems.org/) at [ruby-memcached](https://rubygems.org/gems/ruby-memcached)
 
 ```cmd
-    gem install ruby-memcached
+gem install ruby-memcached
 ```
 
 ## Testing
