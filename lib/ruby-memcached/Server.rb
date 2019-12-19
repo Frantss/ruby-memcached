@@ -8,7 +8,6 @@ module RubyMemcached
 
         attr_reader :host
         attr_reader :port
-        attr_accessor :storage
     
         def initialize(host, port)
             @host = host

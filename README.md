@@ -7,7 +7,7 @@ Coded as part of [Moove-It coding-challenges](https://github.com/moove-it/coding
 
 The solution is uploaded to [RubyGems](https://rubygems.org/) at (ruby-memcached)[https://rubygems.org/gems/ruby-memcached]
 
-```shell
+```cmd
     gem install ruby-memcached
 ```
 
